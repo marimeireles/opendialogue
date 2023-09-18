@@ -1,0 +1,37 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Flask related
+instance/
+.webassets-cache
+
+# Databases
+app.db
+*.sqlite
+
+# Logs
+logs/
+*.log
+
+# Configurations
+config.py
+.env
+
+# Migration folder
+migrations/
+
+# Tests
+tests.py
+
+# Procfile - generally you want this file in git if deploying to something like Heroku
+# Procfile
+
+# Requirements - generally you want this file in git to know package dependencies
+# requirements.txt
+
+# LICENSE and README - generally you want these files in git
+# LICENSE
+# README.md
+

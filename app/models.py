@@ -5,6 +5,7 @@ from hashlib import md5
 from app import db, login, app
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy import UniqueConstraint
 
 
 followers = db.Table(
@@ -12,6 +13,19 @@ followers = db.Table(
     db.Column("follower_id", db.Integer, db.ForeignKey("user.id")),
     db.Column("followed_id", db.Integer, db.ForeignKey("user.id")),
 )
+
+
+class RSVP(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    user = db.relationship('User', back_populates='rsvps')
+    status = db.Column(db.String(20), default="Pending")  # Pending, Accepted, Denied
+    __table_args__ = (UniqueConstraint('user_id', 'event_id', name='_user_event_uc'),)
+
+    def __repr__(self):
+        return f"RSVP('{self.user_id}', '{self.event_id}', '{self.status}')"
 
 
 class Event(db.Model):
@@ -22,6 +36,9 @@ class Event(db.Model):
     event_datetime = db.Column(db.DateTime)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    rsvps = db.relationship('RSVP', backref='event', lazy=True)
+    max_attendees = db.Column(db.Integer)
+    require_approval = db.Column(db.Boolean, default=False)
 
 
 class User(UserMixin, db.Model):
@@ -41,6 +58,7 @@ class User(UserMixin, db.Model):
         lazy="dynamic",
     )
     events = db.relationship("Event", backref="user", lazy="dynamic")
+    rsvps = db.relationship('RSVP', back_populates='user')
 
     def __repr__(self):
         return "<User {}>".format(self.username)

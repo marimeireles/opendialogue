@@ -12,9 +12,58 @@ from app.forms import (
     ResetPasswordRequestForm,
     ResetPasswordForm,
 )
-from app.models import User, Post, Event
+from app.models import User, Post, Event, RSVP
 from app.email import send_password_reset_email
 from guess_language import guess_language
+
+
+
+@app.route("/rsvp/approval/<int:rsvp_id>/<status>", methods=["GET"])
+@login_required
+def rsvp_approval(rsvp_id, status):
+    rsvp = RSVP.query.get_or_404(rsvp_id)
+    if current_user.id != rsvp.event.user_id:
+        abort(403)  # Forbidden
+    rsvp.status = status
+    db.session.commit()
+    flash("RSVP status updated.")
+    return redirect(url_for("event_detail", event_id=rsvp.event_id))
+
+@app.route("/rsvp/removal/<int:rsvp_id>", methods=["GET"])
+@login_required
+def rsvp_removal(rsvp_id):
+    rsvp = RSVP.query.get_or_404(rsvp_id)
+    if current_user.id != rsvp.event.user_id:
+        abort(403)  # Forbidden
+    db.session.delete(rsvp)
+    db.session.commit()
+    flash("RSVP removed.")
+    return redirect(url_for("event_detail", event_id=rsvp.event_id))
+
+
+@app.route('/rsvp/<int:event_id>', methods=['POST'])
+@login_required
+def rsvp(event_id):
+    event = Event.query.get_or_404(event_id)
+    user = current_user
+
+    existing_rsvp = RSVP.query.filter_by(user_id=user.id, event_id=event.id).first()
+
+    if existing_rsvp:
+        flash('You have already RSVPed for this event.', 'warning')
+        return redirect(url_for('event_detail', event_id=event.id))
+
+    try:
+        new_rsvp = RSVP(event_id=event.id, user_id=user.id)
+        db.session.add(new_rsvp)
+        db.session.commit()
+        flash('Successfully RSVPed for the event!', 'success')
+    except Exception as e:
+        print(str(e))
+        db.session.rollback()  # Roll back the transaction in case of error
+        flash('Failed to RSVP for the event.', 'error')
+
+    return redirect(url_for('event_detail', event_id=event.id))
 
 
 @app.before_request

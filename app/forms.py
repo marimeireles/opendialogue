@@ -6,6 +6,7 @@ from wtforms import (
     TextAreaField,
     SubmitField,
     DateTimeField,
+    IntegerField,
 )
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Length
 from wtforms.fields import DateField, TimeField
@@ -18,7 +19,9 @@ class EventForm(FlaskForm):
     location = StringField("Event Location", validators=[DataRequired()])
     date = DateField("Event Date", format="%Y-%m-%d", validators=[DataRequired()])
     time = TimeField("Event Time", format="%H:%M", validators=[DataRequired()])
-    submit = SubmitField("Submit")
+    max_attendees = IntegerField('Max Attendees')
+    require_approval = BooleanField('Require Approval for RSVP')
+    submit = SubmitField('Create Event')
 
 
 class LoginForm(FlaskForm):

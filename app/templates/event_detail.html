@@ -13,7 +13,6 @@
                     <p class="card-text">{{ event.description }}</p>
                     <p class="card-text"><small class="text-muted">Location: {{ event.location }}</small></p>
                     <p class="card-text"><small class="text-muted">Date and Time: {{ event.event_datetime }}</small></p>
-                    <p class="card-text"><small class="text-muted">Created By: {{ event.user.username }}</small></p> <!-- Assumes 'user' relationship in Event model -->
                     <p class="card-text"><small class="text-muted">Timestamp: {{ event.timestamp }}</small></p>
                 </div>
             </div>
@@ -25,6 +24,7 @@
                 </div>
                 <div class="card-body">
                     <h5 class="card-title">{{ event.user.username }}</h5>
+                    <td width="256px"><img src="{{ user.avatar(256) }}"></td>
                     <!-- <img src="{{ event.user.profile_picture }}" class="img-thumbnail" alt="Profile Picture"> Assumes 'user' has 'profile_picture' attribute -->
                 </div>
             </div>

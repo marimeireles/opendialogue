@@ -1,27 +1,43 @@
 {% extends "base.html" %}
-{% import 'bootstrap/wtf.html' as wtf %}
 
-{% block app_content %}
-    <h1>Hi, {{ current_user.username }}!</h1>
-    {% if form %}
-    {{ wtf.quick_form(form) }}
-    <br>
-    {% endif %}
-    {% for post in posts %}
-        {% include '_post.html' %}
-    {% endfor %}
-    <nav aria-label="...">
-        <ul class="pager">
-            <li class="previous{% if not prev_url %} disabled{% endif %}">
-                <a href="{{ prev_url or '#' }}">
-                    <span aria-hidden="true">&larr;</span> Newer posts
-                </a>
-            </li>
-            <li class="next{% if not next_url %} disabled{% endif %}">
-                <a href="{{ next_url or '#' }}">
-                    Older posts <span aria-hidden="true">&rarr;</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
+{% block content %}
+<h1>Upcoming Events</h1>
+{% if upcoming_events.items %}
+<table>
+  <tr>
+    <th>Event Name</th>
+    <th>Date Created</th>
+    <th>Event Date</th>
+  </tr>
+  {% for event in upcoming_events.items %}
+  <tr>
+    <td>{{ event.name }}</td>
+    <td>{{ event.timestamp }}</td>
+    <td>{{ event.event_datetime }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p>No upcoming events.</p>
+{% endif %}
+
+<h1>Past Events</h1>
+{% if past_events.items %}
+<table>
+  <tr>
+    <th>Event Name</th>
+    <th>Date Created</th>
+    <th>Event Date</th>
+  </tr>
+  {% for event in past_events.items %}
+  <tr>
+    <td>{{ event.name }}</td>
+    <td>{{ event.timestamp }}</td>
+    <td>{{ event.event_datetime }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p>No past events.</p>
+{% endif %}
 {% endblock %}

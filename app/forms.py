@@ -1,7 +1,16 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField
+from wtforms import StringField, PasswordField, BooleanField, TextAreaField, SubmitField, DateTimeField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Length
+from wtforms.fields import DateField, TimeField
 from app.models import User
+
+class EventForm(FlaskForm):
+    name = StringField('Event Name', validators=[DataRequired()])
+    description = TextAreaField('Event Description', validators=[DataRequired()])
+    location = StringField('Event Location', validators=[DataRequired()])
+    date = DateField('Event Date', format='%Y-%m-%d', validators=[DataRequired()])
+    time = TimeField('Event Time', format='%H:%M', validators=[DataRequired()])
+    submit = SubmitField('Submit')
 
 class LoginForm(FlaskForm):
 	username = StringField('Username', validators=[DataRequired()])

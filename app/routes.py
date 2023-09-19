@@ -23,6 +23,13 @@ def before_request():
         current_user.last_seen = datetime.utcnow()
         db.session.commit()
 
+@app.route('/remove_event/<int:event_id>', methods=['POST'])
+def remove_event(event_id):
+    event = Event.query.get_or_404(event_id)
+    db.session.delete(event)  # Replace `db.session` with your SQLAlchemy session
+    db.session.commit()  # Commit the deletion
+    flash("Event successfully deleted.")
+    return redirect(url_for('home'))
 
 @app.route("/event/<int:event_id>", methods=["GET"])
 def event_detail(event_id):
@@ -77,22 +84,13 @@ def user_index():
     )
 
 
-@app.route("/explore")
-@login_required
+@app.route('/explore', methods=['GET'])
 def explore():
-    page = request.args.get("page", 1, type=int)
-    posts = Post.query.order_by(Post.timestamp.desc()).paginate(
-        page=page, per_page=app.config["POSTS_PER_PAGE"], error_out=False
-    )
-    next_url = url_for("explore", page=posts.next_num) if posts.has_next else None
-    prev_url = url_for("explore", page=posts.prev_num) if posts.has_prev else None
-    return render_template(
-        "user_index.html",
-        title="Explore",
-        posts=posts.items,
-        next_url=next_url,
-        prev_url=prev_url,
-    )
+    current_time = datetime.utcnow()
+    upcoming_events = Event.query.filter(Event.event_datetime >= current_time).order_by(Event.event_datetime.asc()).all()
+    return render_template('explore.html', upcoming_events=upcoming_events)
+
+
 
 
 @app.route("/login", methods=["GET", "POST"])

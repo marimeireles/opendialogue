@@ -1,5 +1,4 @@
 Flask
-Flask-Bootstrap
 Flask-Login
 Flask-Mail
 Flask-Migrate

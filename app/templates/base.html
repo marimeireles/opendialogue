@@ -1,11 +1,140 @@
-{% extends 'bootstrap/base.html' %}
+<!-- {% extends 'bootstrap/base.html' %} -->
 
 {% block title %}
     {% if title %}{{ title }} - open discourse{% else %}welcome to open discourse{% endif %}
 {% endblock %}
 
+{% block head %}
+<head>
+    <!-- Your custom CSS goes here -->
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style/base.css') }}">
 
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<style>
+    @keyframes rotate {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    .navbar {
+        background-color: #fafafa; !important
+    }
+
+    .navbar-header {
+        font-size: 20px;
+        font-weight: 500;
+    }
+
+    a.navbar-brand, a.navbar-brand, a.li.nav a.li.navbar-nav {
+        color: #8eb6ff !important;
+        font-size: 25px;
+        font-weight: 700;
+    }
+
+    ul.nav.navbar-nav li a {
+        color: #8eb6ff; !important
+        font-size: 17px;
+        font-weight: 500;
+    }
+
+    h1, p, th, .card-header, .card-title, .mt-3, .mt-4 {
+        color: #fc9289;
+    }
+
+    .list-group-item {
+        background-color: #fafafa; !important
+    }
+
+    .btn-danger {
+        border-color: #8198c3 !important;
+        background-color: #92a8d1 !important;
+    }
+
+    .btn-success {
+        border-color: #bce6d3 !important;
+        background-color: #aaf0d0 !important;
+    }
+
+    .table tbody tr {
+    background-color: #fff3f2 !important;
+    }
+    .table-hover tbody tr:hover {
+        background-color: #fff3f2 !important;
+    }
+
+    .title-color {
+        color: white;
+    }
+
+    .out-top, .in-top, .out-bottom, .in-bottom {
+        transform-origin: 50% 50%;
+    }
+
+    .out-top {
+        animation: rotate 20s linear infinite;
+    }
+
+    .in-top {
+        animation: rotate 10s linear infinite;
+    }
+
+    .out-bottom {
+        animation: rotate 25s linear infinite;
+    }
+
+    .in-bottom {
+        animation: rotate 15s linear infinite;
+    }
+
+    body {
+        background-color: #fff3f2;
+    }
+
+    svg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+    }
+
+    .links {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        font-size: 18px;
+        font-family: sans-serif;
+    }
+
+    a {
+        text-decoration: none;
+        color: black;
+        margin-left: 1em;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+    a img.icon {
+        display: inline-block;
+        height: 1em;
+        margin: 0 0 -0.1em 0.3em;
+    }
+
+    .out-top, .in-top, .out-bottom, .in-bottom {
+                filter: blur(3px);  /* Add blur effect */
+    }
+
+</style>
+</head>
+{% endblock %}
+
+
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style/base.css') }}">
 
 

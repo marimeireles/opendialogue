@@ -8,7 +8,7 @@
 <head>
     <!-- Your custom CSS goes here -->
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style/base.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style/base.css') }}">
 
 <style>
     @keyframes rotate {
@@ -39,6 +39,17 @@
         color: #8eb6ff; !important
         font-size: 17px;
         font-weight: 500;
+    }
+
+    ul.nav.navbar-nav li a:hover {
+        color: #7da0df; !important
+        font-size: 17px;
+        font-weight: 500;
+    }
+
+    .link {
+        color: #fc9289;
+        text-decoration: underline;
     }
 
     h1, p, th, .card-header, .card-title, .mt-3, .mt-4 {

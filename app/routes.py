@@ -26,7 +26,7 @@ def rsvp_approval(rsvp_id, status):
         abort(403)  # Forbidden
     rsvp.status = status
     db.session.commit()
-    flash("RSVP status updated.")
+    flash("RSVP status updated. ✨")
     return redirect(url_for("event_detail", event_id=rsvp.event_id))
 
 @app.route("/rsvp/removal/<int:rsvp_id>", methods=["GET"])
@@ -37,7 +37,7 @@ def rsvp_removal(rsvp_id):
         abort(403)  # Forbidden
     db.session.delete(rsvp)
     db.session.commit()
-    flash("RSVP removed.")
+    flash("RSVP removed. 👹")
     return redirect(url_for("event_detail", event_id=rsvp.event_id))
 
 
@@ -57,7 +57,7 @@ def rsvp(event_id):
         new_rsvp = RSVP(event_id=event.id, user_id=user.id)
         db.session.add(new_rsvp)
         db.session.commit()
-        flash('Successfully RSVPed for the event!', 'success')
+        flash('Successfully RSVPed for the event! Waiting for approval.', 'success')
     except Exception as e:
         print(str(e))
         db.session.rollback()  # Roll back the transaction in case of error
@@ -78,7 +78,7 @@ def remove_event(event_id):
     event = Event.query.get_or_404(event_id)
     db.session.delete(event)
     db.session.commit()
-    flash("Event successfully deleted.")
+    flash("Event successfully deleted")
     return redirect(url_for("user_index"))
 
 
@@ -103,7 +103,7 @@ def create_event():
         )
         db.session.add(event)
         db.session.commit()
-        flash("Your event has been created!")
+        flash("Your event has been created! 🥰")
         return redirect(url_for("event_detail", event_id=event.id))
     return render_template("create_event.html", form=form)
 
@@ -154,7 +154,7 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user is None or not user.check_password(form.password.data):
-            flash("Invalid username or password")
+            flash("Invalid username or password.")
             return redirect(url_for("login"))
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get("next")

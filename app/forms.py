@@ -10,6 +10,7 @@ from wtforms import (
 )
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Length
 from wtforms.fields import DateField, TimeField
+from flask_wtf.file import FileField, FileAllowed
 from app.models import User
 
 
@@ -20,6 +21,7 @@ class EventForm(FlaskForm):
     date = DateField("Event Date", format="%Y-%m-%d", validators=[DataRequired()])
     time = TimeField("Event Time", format="%H:%M", validators=[DataRequired()])
     max_attendees = IntegerField('Max Attendees')
+    image = FileField('Event Image', validators=[FileAllowed(['jpg', 'png'])])
     require_approval = BooleanField('Require Approval for RSVP')
     submit = SubmitField('Create Event')
 

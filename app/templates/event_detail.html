@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container">
     <div class="row">
         <div class="col-md-8">
             <div class="card">
@@ -23,11 +23,9 @@
                     <!-- Display RSVP Success or Failure Messages -->
                     {% with messages = get_flashed_messages() %}
                         {% if messages %}
-                        <div class="row">
-                            <div class="alert alert-success mt-2">
+                            <div class="alert alert-info mt-2" style="width: 57.66%; font-size: 15px;">
                                 {{ messages[0] }}
                             </div>
-                        </div>
                         {% endif %}
                     {% endwith %}
 
@@ -36,32 +34,46 @@
                     <ul class="list-group">
                         {% for rsvp in event.rsvps %}
                             {% if rsvp.status == "Accepted" %}
-                                <li class="list-group-item">{{ rsvp.user.username }}</li>
+                                <li class="list-group-item" style="position: relative;">
+                                    <!-- Make username clickable -->
+                                    <a href="{{ url_for('user', username=rsvp.user.username) }}" class="link">
+                                        {{ rsvp.user.username }}
+                                    </a>
+                                    
+                                    <!-- Show "Remove" button only for event owner -->
+                                    {% if event.user.id == current_user.id %}
+                                        <a href="{{ url_for('rsvp_removal', rsvp_id=rsvp.id) }}" class="btn btn-danger btn-sm" style="position: absolute; right: 0; top: 50%; transform: translateY(-50%); margin-right: 6px;">Remove</a>
+                                    {% endif %}
+                                </li>
                             {% endif %}
                         {% endfor %}
                     </ul>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4" style="background-color: #8eb6ff; height: 90%;">
+
             <div class="card text-center">
                 <div class="card-body">
-                    <h3 class="card-title">{{ event.user.username }}</h3>
+                    <h3 class="card-title" style="color: #fafafa">{{ event.user.username }}</h3>
                     <td width="256px">
                       <img src="{{ event.user.avatar(128) }}" style="border-radius: 50%;">
                     </td>
 
                     <!-- Show RSVPs for event owner -->
                     {% if event.user.id == current_user.id %}
-                    <h5 class="mt-3">Pending RSVPs</h5>
+                    <h4 class="mt-3" style="color: #fafafa">Pending RSVPs</h4>
                     <ul class="list-group">
                         {% for rsvp in event.rsvps %}
                             {% if rsvp.status != "Accepted" %}
-                            <li class="list-group-item">
-                                {{ rsvp.user.username }}
-                                <a href="{{ url_for('rsvp_approval', rsvp_id=rsvp.id, status='Accepted') }}" class="btn btn-success btn-sm">Accept</a>
-                                <a href="{{ url_for('rsvp_removal', rsvp_id=rsvp.id) }}" class="btn btn-danger btn-sm">Remove</a>
-                            </li>
+                                <li class="list-group-item">
+                                    <!-- Make username clickable -->
+                                    <a href="{{ url_for('user', username=rsvp.user.username) }}" class="link">
+                                        {{ rsvp.user.username }}
+                                    </a>
+                                    <a href="{{ url_for('rsvp_approval', rsvp_id=rsvp.id, status='Accepted') }}" class="btn btn-success btn-sm">Accept</a>
+                                    <a href="{{ url_for('rsvp_removal', rsvp_id=rsvp.id) }}" class="btn btn-danger btn-sm">Remove</a>
+                                </li>
                             {% endif %}
                         {% endfor %}
                     </ul>

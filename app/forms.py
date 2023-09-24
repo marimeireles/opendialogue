@@ -20,7 +20,7 @@ class EventForm(FlaskForm):
     location = StringField("Event Location", validators=[DataRequired()])
     date = DateField("Event Date", format='%Y-%m-%d', validators=[DataRequired()])
     time = TimeField("Event Time", format='%H:%M', validators=[DataRequired()])
-    image = FileField('Event Image', validators=[FileAllowed(['jpg', 'png'])])
+    image = FileField('Image', validators=[FileAllowed(['jpg', 'png', 'jpeg'])])
     require_approval = BooleanField('Require Approval for RSVP')
     max_attendees = IntegerField('Max Attendees', validators=[DataRequired()])
     submit = SubmitField('Create Event')

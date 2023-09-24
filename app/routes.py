@@ -124,6 +124,14 @@ def edit_event(event_id):
         event.date = form.date.data
         event.time = form.time.data
         event.max_attendees = form.max_attendees.data
+        
+        image = request.files['image']
+        if image and allowed_file(image.filename):
+            filename = secure_filename(image.filename)
+            image_url = os.path.join(app.config['UPLOAD_FOLDER'], filename).replace("../", "", 1)
+            image.save(image_url)
+            event.image_url = image_url  # update image_url field
+
         db.session.commit()
         flash('Your event has been updated', 'success')
         return redirect(url_for('event_detail', event_id=event.id))
@@ -138,6 +146,7 @@ def edit_event(event_id):
     return render_template('edit_event.html', title='Edit Event', form=form, event_id=event.id)
 
 
+
 @app.route("/create_event", methods=["GET", "POST"])
 @login_required
 def create_event():
@@ -148,10 +157,19 @@ def create_event():
         print('Form is valid 🎉')
         image_url = ''
         image = request.files['image']
+
+        print(f"Is the file allowed? {allowed_file(image.filename)}")  # Debug
+
         if image and allowed_file(image.filename):
             filename = secure_filename(image.filename)
-            image_url = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            image.save(image_url)
+            image_url = os.path.join(app.config['UPLOAD_FOLDER'], filename).replace("../", "", 1)
+            print(f"Saving image to: {image_url}")  # Debug
+            try:
+                image.save(image_url)
+            except Exception as e:
+                print(f"Failed to save image: {e}")
+                flash("An error occurred while saving the image.")
+                return render_template("create_event.html", form=form)
         else:
             flash("Please upload a valid image file.")
 

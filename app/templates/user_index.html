@@ -41,7 +41,8 @@
           <td>{{ event.event_datetime }}</td>
           <td>
             <a href="{{ url_for('event_detail', event_id=event.id) }}" class="btn btn-info">Details</a>
-            <button onclick="confirmDelete({{ event.id }})" class="btn btn-danger">Delete</button>
+            <a href="{{ url_for('edit_event', event_id=event.id) }}" class="btn btn-danger">Edit</a>
+            <a onclick="confirmDelete({{ event.id }})" class="btn btn-warning" style="background-color: #fc9289; border-color: #CA756E;">Delete</a>
           </td>
         </tr>
         {% endfor %}
@@ -69,9 +70,13 @@
           <td>{{ event.timestamp }}</td>
           <td>{{ event.event_datetime }}</td>
           <td>
+            {% if event.user.id == current_user.id %}
             <a href="{{ url_for('event_detail', event_id=event.id) }}" class="btn btn-info">Details</a>
-            <button onclick="confirmDelete({{ event.id }})" class="btn btn-danger">Delete</button>
+            <a href="{{ url_for('edit_event', event_id=event.id) }}" class="btn btn-danger">Edit</a>
+            <a onclick="confirmDelete({{ event.id }})" class="btn btn-warning" style="background-color: #fc9289; border-color: #CA756E;">Delete</a>
+            {% endif %}
           </td>
+
         </tr>
         {% endfor %}
       </tbody>

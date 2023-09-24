@@ -1,7 +1,8 @@
 from datetime import datetime
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, send_from_directory
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.urls import url_parse
+from werkzeug.utils import secure_filename
 from app import app, db
 from app.forms import (
     EventForm,
@@ -15,7 +16,19 @@ from app.forms import (
 from app.models import User, Post, Event, RSVP
 from app.email import send_password_reset_email
 from guess_language import guess_language
+import os
 
+UPLOAD_FOLDER = 'uploads'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 
 @app.route("/rsvp/approval/<int:rsvp_id>/<status>", methods=["GET"])
@@ -88,24 +101,85 @@ def event_detail(event_id):
     return render_template("event_detail.html", event=event)
 
 
+@app.route('/edit_event/<int:event_id>', methods=['GET', 'POST'])
+@login_required
+def edit_event(event_id):
+    event = Event.query.get_or_404(event_id)
+    if event.user.id != current_user.id:
+        abort(403)  # Unauthorized access
+    form = EventForm()
+    if form.validate_on_submit():
+        event.name = form.name.data
+        event.description = form.description.data
+        event.location = form.location.data
+        event.date = form.date.data
+        event.time = form.time.data
+        event.max_attendees = form.max_attendees.data
+        # Handle image upload logic here if applicable
+        event.require_approval = form.require_approval.data
+        db.session.commit()
+        flash('Your event has been updated', 'success')
+        return redirect(url_for('event_detail', event_id=event.id))
+    elif request.method == 'GET':
+        form.name.data = event.name
+        form.description.data = event.description
+        form.location.data = event.location
+        form.date.data = event.date
+        form.time.data = event.time
+        form.max_attendees.data = event.max_attendees
+        form.require_approval.data = event.require_approval
+    return render_template('edit_event.html', title='Edit Event', form=form, event_id=event.id)
+
+
 @app.route("/create_event", methods=["GET", "POST"])
 @login_required
 def create_event():
+    print('gets in create event 🏝️')
     form = EventForm()
+    print("RAW data received:", request.form)
     if form.validate_on_submit():
-        combined_datetime = datetime.combine(form.date.data, form.time.data)
+        print('Form is valid 🎉')
+        image_url = ''
+        image = request.files['image']
+        if image and allowed_file(image.filename):
+            filename = secure_filename(image.filename)
+            image_url = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            image.save(image_url)
+        else:
+            flash("Please upload a valid image file.")
+
         event = Event(
             name=form.name.data,
             description=form.description.data,
             location=form.location.data,
-            event_datetime=combined_datetime,
+            date=form.date.data,
+            time=form.time.data,
+            image_url=image_url,
             user_id=current_user.id,
         )
-        db.session.add(event)
-        db.session.commit()
+
+        print('☀️☀️☀️☀️')
+
+        try:
+            db.session.add(event)
+            print("Added event to session:", event)
+            db.session.flush()
+            db.session.commit()
+            print("Committed event:", event)
+        except Exception as e:
+            db.session.rollback()
+            print("Database commit failed:", e)
+            flash("An error occurred. Please try again.")
+            return render_template("create_event.html", form=form)
+
         flash("Your event has been created! 🥰")
-        return redirect(url_for("event_detail", event_id=event.id))
-    return render_template("create_event.html", form=form)
+
+    else:
+        print('Form is not valid 😢')
+        print(form.errors)  # Print validation errors
+        return render_template("create_event.html", form=form)
+
+    return redirect(url_for("event_detail", event_id=event.id))
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -120,14 +194,14 @@ def user_index():
     page = request.args.get("page", 1, type=int)
     upcoming_events = (
         Event.query.filter_by(user_id=current_user.id)
-        .filter(Event.event_datetime > datetime.utcnow())
-        .order_by(Event.event_datetime.asc())
+        .filter(Event.date > datetime.utcnow())
+        .order_by(Event.date.asc())
         .paginate(page=page, per_page=10, error_out=False)
     )
     past_events = (
         Event.query.filter_by(user_id=current_user.id)
-        .filter(Event.event_datetime < datetime.utcnow())
-        .order_by(Event.event_datetime.desc())
+        .filter(Event.date < datetime.utcnow())
+        .order_by(Event.date.desc())
         .paginate(page=page, per_page=10, error_out=False)
     )
     return render_template(
@@ -139,10 +213,14 @@ def user_index():
 def explore():
     current_time = datetime.utcnow()
     upcoming_events = (
-        Event.query.filter(Event.event_datetime >= current_time)
-        .order_by(Event.event_datetime.asc())
+        Event.query.filter(Event.date >= current_time)
+        .order_by(Event.date.asc())
         .all()
     )
+
+    for event in upcoming_events:
+        print(f'Event {event.id} has image_url: {event.image_url}')
+
     return render_template("explore.html", upcoming_events=upcoming_events)
 
 
@@ -218,38 +296,6 @@ def edit_profile():
         form.username.data = current_user.username
         form.about_me.data = current_user.about_me
     return render_template("edit_profile.html", title="Edit Profile", form=form)
-
-
-@app.route("/follow/<username>")
-@login_required
-def follow(username):
-    user = User.query.filter_by(username=username).first()
-    if user is None:
-        flash("User {} not found.".format(username))
-        return redirect(url_for("user_index"))
-    if user == current_user:
-        flash("You cannot follow yourself!")
-        return redirect(url_for("user", username=username))
-    current_user.follow(user)
-    db.session.commit()
-    flash("You are following {}!".format(username))
-    return redirect(url_for("user", username=username))
-
-
-@app.route("/unfollow/<username>")
-@login_required
-def unfollow(username):
-    user = User.query.filter_by(username=username).first()
-    if user is None:
-        flash("User {} not found.".format(username))
-        return redirect(url_for("user_index"))
-    if user == current_user:
-        flash("You cannot unfollow yourself!")
-        return redirect(url_for("user", username=username))
-    current_user.unfollow(user)
-    db.session.commit()
-    flash("You are not following {}.".format(username))
-    return redirect(url_for("user", username=username))
 
 
 @app.route("/reset_password_request", methods=["GET", "POST"])

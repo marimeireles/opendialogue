@@ -12,12 +12,12 @@
                     <h4 class="card-title">Event Details</h4>
                     <p class="card-text">{{ event.description }}</p>
                     <p class="card-text"><medium class="text-muted">Location: {{ event.location }}</small></p>
-                    <p class="card-text"><medium class="text-muted">Date and Time: {{ event.event_datetime }}</small></p>
-                    <p class="card-text"><medium class="text-muted">Timestamp: {{ event.timestamp }}</small></p>
+                    <p class="card-text"><medium class="text-muted">Date: {{ event.date }}</small></p>
+                        <p class="card-text"><medium class="text-muted">Time: {{ event.time }}</small></p>
 
                     <!-- RSVP button -->
                     <form method="post" action="{{ url_for('rsvp', event_id=event.id) }}">
-                        <button type="submit" class="btn btn-info">RSVP</button>
+                        <button type="submit" class="btn btn-default">RSVP</button>
                     </form>
                     
                     <!-- Display RSVP Success or Failure Messages -->
@@ -62,21 +62,22 @@
 
                     <!-- Show RSVPs for event owner -->
                     {% if event.user.id == current_user.id %}
-                    <h4 class="mt-3" style="color: #fafafa">Pending RSVPs</h4>
-                    <ul class="list-group">
+                        <h4 class="mt-3" style="color: #fafafa; margin-top:20px">Pending RSVPs</h4>
+                        <ul class="list-group">
                         {% for rsvp in event.rsvps %}
                             {% if rsvp.status != "Accepted" %}
-                                <li class="list-group-item">
+                                {% set rsvp_found = true %}
+                                <li class="list-group-item" style="margin-top: 5px;">
                                     <!-- Make username clickable -->
-                                    <a href="{{ url_for('user', username=rsvp.user.username) }}" class="link">
+                                    <a href="{{ url_for('user', username=rsvp.user.username) }}" class="link" style="color:black; margin-right:5px;">
                                         {{ rsvp.user.username }}
                                     </a>
-                                    <a href="{{ url_for('rsvp_approval', rsvp_id=rsvp.id, status='Accepted') }}" class="btn btn-success btn-sm">Accept</a>
-                                    <a href="{{ url_for('rsvp_removal', rsvp_id=rsvp.id) }}" class="btn btn-danger btn-sm">Remove</a>
+                                    <a href="{{ url_for('rsvp_approval', rsvp_id=rsvp.id, status='Accepted') }}" class="btn btn-info btn-sm">Accept</a>
+                                    <a href="{{ url_for('rsvp_removal', rsvp_id=rsvp.id) }}" class="btn btn-warning btn-sm" style="background-color: #fc9289; border-color: #CA756E;">Remove</a>
                                 </li>
                             {% endif %}
                         {% endfor %}
-                    </ul>
+                        </ul>
                     {% endif %}
                 </div>
             </div>

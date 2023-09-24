@@ -5,14 +5,7 @@ from hashlib import md5
 from app import db, login, app
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-from sqlalchemy import UniqueConstraint
-
-
-followers = db.Table(
-    "followers",
-    db.Column("follower_id", db.Integer, db.ForeignKey("user.id")),
-    db.Column("followed_id", db.Integer, db.ForeignKey("user.id")),
-)
+from sqlalchemy import UniqueConstraint, Time
 
 
 class RSVP(db.Model):
@@ -33,11 +26,11 @@ class Event(db.Model):
     name = db.Column(db.String(100))
     description = db.Column(db.String(300))
     location = db.Column(db.String(100))
-    event_datetime = db.Column(db.DateTime)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    date = db.Column(db.Date)
+    time = db.Column(db.Time)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     rsvps = db.relationship('RSVP', backref='event', lazy=True)
-    max_attendees = db.Column(db.Integer)
+    image_url = db.Column(db.String(100))
     require_approval = db.Column(db.Boolean, default=False)
 
 
@@ -49,14 +42,6 @@ class User(UserMixin, db.Model):
     posts = db.relationship("Post", backref="author", lazy="dynamic")
     about_me = db.Column(db.String(140))
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
-    followed = db.relationship(
-        "User",
-        secondary=followers,
-        primaryjoin=(followers.c.follower_id == id),
-        secondaryjoin=(followers.c.followed_id == id),
-        backref=db.backref("followers", lazy="dynamic"),
-        lazy="dynamic",
-    )
     events = db.relationship("Event", backref="user", lazy="dynamic")
     rsvps = db.relationship('RSVP', back_populates='user')
 
@@ -72,24 +57,6 @@ class User(UserMixin, db.Model):
     def avatar(self, size):
         digest = md5(self.email.lower().encode("utf-8")).hexdigest()
         return "https://www.gravatar.com/avatar/{}?d=identicon&s={}".format(digest, size)
-
-    def follow(self, user):
-        if not self.is_following(user):
-            self.followed.append(user)
-
-    def unfollow(self, user):
-        if self.is_following(user):
-            self.followed.remove(user)
-
-    def is_following(self, user):
-        return self.followed.filter(followers.c.followed_id == user.id).count() > 0
-
-    def followed_posts(self):
-        followed = Post.query.join(followers, (followers.c.followed_id == Post.user_id)).filter(
-            followers.c.follower_id == self.id
-        )
-        own = Post.query.filter_by(user_id=self.id)
-        return followed.union(own).order_by(Post.timestamp.desc())
 
     def get_reset_password_token(self, expires_in=600):
         return jwt.encode(
@@ -117,7 +84,6 @@ class Post(db.Model):
     body = db.Column(db.String(140))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    # language = db.Column(db.String(5))
 
     def __repr__(self):
         return "<Post {}>".format(self.body)

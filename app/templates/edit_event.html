@@ -13,34 +13,36 @@
 
     <div class="form-group">
       {{ form.description.label }}
-      {{ form.description(class="form-control") }}
+      {{ form.description(class="form-control", rows=5) }}
     </div>
 
     <div class="form-group">
       {{ form.location.label }}
       {{ form.location(class="form-control") }}
     </div>
-
-    <div class="form-group">
+<div class="row">
+    <div class="form-group col-md-6">
       {{ form.date.label }}
       {{ form.date(class="form-control") }}
     </div>
 
-    <div class="form-group">
+    <div class="form-group col-md-6">
       {{ form.time.label }}
       {{ form.time(class="form-control") }}
     </div>
-
-    <div class="form-group">
-      {{ form.image.label }}
-      {{ form.image() }}
-    </div>
-
-    <div class="form-group">
+</div>
+<div class="row">
+    <div class="form-group col-md-1">
       {{ form.max_attendees.label }}
       {{ form.max_attendees(class="form-control") }}
     </div>
-
+</div>
+<div class="row">
+    <div class="form-group col-md-3">
+      {{ form.image.label }}
+      <input type="file" name="image" accept="image/*" class="form-control">
+    </div>
+</div>
     <button type="submit" class="btn btn-default">Update Event</button>
   </form>
 </div>

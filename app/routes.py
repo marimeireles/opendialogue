@@ -18,6 +18,7 @@ from app.email import send_password_reset_email
 from guess_language import guess_language
 import os
 
+
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 

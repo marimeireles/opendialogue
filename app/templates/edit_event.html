@@ -3,7 +3,7 @@
 {% block content %}
 <div class="container">
   <h1>Edit Event</h1>
-  <form method="post" enctype="multipart/form-data">
+  <form method="post" enctype="multipart/form-data" class="mt-4">
     {{ form.hidden_tag() }}
 
     <div class="form-group">
@@ -21,8 +21,6 @@
       {{ form.location(class="form-control") }}
     </div>
 
-    <!-- TODO rn getting issues with date and time, i dont think sqlalchemy has a field for each one separetely -->
-
     <div class="form-group">
       {{ form.date.label }}
       {{ form.date(class="form-control") }}
@@ -34,21 +32,16 @@
     </div>
 
     <div class="form-group">
-      {{ form.max_attendees.label }}
-      {{ form.max_attendees(class="form-control") }}
-    </div>
-
-    <div class="form-group">
       {{ form.image.label }}
       {{ form.image() }}
     </div>
 
-    <div class="form-check">
-      {{ form.require_approval.label }}
-      {{ form.require_approval() }}
+    <div class="form-group">
+      {{ form.max_attendees.label }}
+      {{ form.max_attendees(class="form-control") }}
     </div>
 
-    <button type="submit" class="btn btn-primary">Update Event</button>
+    <button type="submit" class="btn btn-default">Update Event</button>
   </form>
 </div>
 {% endblock %}

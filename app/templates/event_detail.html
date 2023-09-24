@@ -34,7 +34,7 @@
                     <ul class="list-group">
                         {% for rsvp in event.rsvps %}
                             {% if rsvp.status == "Accepted" %}
-                                <li class="list-group-item" style="position: relative;">
+                                <li class="list-group-item col-md-8" style="position: relative;">
                                     <!-- Make username clickable -->
                                     <a href="{{ url_for('user', username=rsvp.user.username) }}" class="link">
                                         {{ rsvp.user.username }}
@@ -42,7 +42,7 @@
                                     
                                     <!-- Show "Remove" button only for event owner -->
                                     {% if event.user.id == current_user.id %}
-                                        <a href="{{ url_for('rsvp_removal', rsvp_id=rsvp.id) }}" class="btn btn-danger btn-sm" style="position: absolute; right: 0; top: 50%; transform: translateY(-50%); margin-right: 6px;">Remove</a>
+                                        <a href="{{ url_for('rsvp_removal', rsvp_id=rsvp.id) }}" class="btn btn-warning btn-sm" style="position: absolute; right: 0; top: 50%; transform: translateY(-50%); margin-right: 6px; background-color: #fc9289; border-color: #CA756E;">Remove</a>
                                     {% endif %}
                                 </li>
                             {% endif %}

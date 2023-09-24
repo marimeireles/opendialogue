@@ -2,9 +2,8 @@
 
 {% block app_content %}
 <div class="row">
-    <div class="col-md-2">
-    <!-- <table class="table table-hover"> -->
-        <tr>
+    <div class="col-md-2" style="padding-top: 10px">
+        <tr">
             <td width="128px"><img src="{{ user.avatar(128) }}" style="border-radius: 50%;"></td>
         </div>
         <div class="col-md-4">
@@ -12,7 +11,7 @@
                 <h1>{{ user.username }}</h1>
                 {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}
                 {% if user == current_user %}
-                <a class="btn btn-info" href="{{ url_for('edit_profile') }}">Edit your profile</a>
+                    <a class="btn btn-default" href="{{ url_for('edit_profile') }}">Edit your profile</a>
                 {% endif %}
             </td>
         </tr>

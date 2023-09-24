@@ -28,10 +28,11 @@ class Event(db.Model):
     location = db.Column(db.String(100))
     date = db.Column(db.Date)
     time = db.Column(db.Time)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     rsvps = db.relationship('RSVP', backref='event', lazy=True)
     image_url = db.Column(db.String(100))
-    require_approval = db.Column(db.Boolean, default=False)
+    max_attendees = db.Column(db.Integer)
 
 
 class User(UserMixin, db.Model):

@@ -19,22 +19,25 @@
                     {{ form.location.label(class="form-label") }}
                     {{ form.location(id="location", class="form-control") }}
                 </div>
-<div class="mb-3">
-    {{ form.date.label(class="form-label") }}
-    {{ form.date(class="form-control") }}
-</div>
+                <div class="mb-3">
+                    {{ form.date.label(class="form-label") }}
+                    {{ form.date(class="form-control") }}
+                </div>
 
-<div class="mb-3">
-    {{ form.time.label(class="form-label") }}
-    {{ form.time(class="form-control") }}
-</div>
-
+                <div class="mb-3">
+                    {{ form.time.label(class="form-label") }}
+                    {{ form.time(class="form-control") }}
+                </div>
                 <!-- Added Image Upload Field -->
                 <div class="mb-3">
                     {{ form.image.label(class="form-label") }}
                     <input type="file" name="image" accept="image/*" class="form-control">
                 </div>
                 <!-- End of Image Upload Field -->
+                <div class="mb-3">
+                    {{ form.max_attendees.label(class="form-label") }}
+                    {{ form.max_attendees(class="form-control") }}
+                </div>
                 <div class="mb-3" style="margin-top: 15px">
                     {{ form.submit(class="btn btn-default") }}
                 </div>

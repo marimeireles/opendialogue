@@ -37,8 +37,8 @@
         {% for event in upcoming_events.items %}
         <tr>
           <td>{{ event.name }}</td>
-          <td>{{ event.timestamp }}</td>
-          <td>{{ event.event_datetime }}</td>
+          <td>{{ event.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+          <td>{{ event.date }}</td>
           <td>
             <a href="{{ url_for('event_detail', event_id=event.id) }}" class="btn btn-info">Details</a>
             <a href="{{ url_for('edit_event', event_id=event.id) }}" class="btn btn-danger">Edit</a>
@@ -67,8 +67,8 @@
         {% for event in past_events.items %}
         <tr>
           <td>{{ event.name }}</td>
-          <td>{{ event.timestamp }}</td>
-          <td>{{ event.event_datetime }}</td>
+          <td>{{ event.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+          <td>{{ event.date }}</td>
           <td>
             {% if event.user.id == current_user.id %}
             <a href="{{ url_for('event_detail', event_id=event.id) }}" class="btn btn-info">Details</a>

@@ -66,8 +66,16 @@ def rsvp(event_id):
         flash('You have already RSVPed for this event.', 'warning')
         return redirect(url_for('event_detail', event_id=event.id))
 
+    # Count the number of accepted RSVPs for this event
+    accepted_rsvps = RSVP.query.filter_by(event_id=event.id, status="Accepted").count()
+
+    # Check if we can accept more RSVPs
+    if event.max_attendees is not None and accepted_rsvps >= event.max_attendees:
+        flash('Sorry, this event is full. 🥺', 'warning')
+        return redirect(url_for('event_detail', event_id=event.id))
+
     try:
-        new_rsvp = RSVP(event_id=event.id, user_id=user.id)
+        new_rsvp = RSVP(event_id=event.id, user_id=user.id, status="Pending")  # Assuming you require approval
         db.session.add(new_rsvp)
         db.session.commit()
         flash('Successfully RSVPed for the event! Waiting for approval.', 'success')
@@ -77,6 +85,7 @@ def rsvp(event_id):
         flash('Failed to RSVP for the event.', 'error')
 
     return redirect(url_for('event_detail', event_id=event.id))
+
 
 
 @app.before_request
@@ -115,8 +124,6 @@ def edit_event(event_id):
         event.date = form.date.data
         event.time = form.time.data
         event.max_attendees = form.max_attendees.data
-        # Handle image upload logic here if applicable
-        event.require_approval = form.require_approval.data
         db.session.commit()
         flash('Your event has been updated', 'success')
         return redirect(url_for('event_detail', event_id=event.id))
@@ -127,7 +134,7 @@ def edit_event(event_id):
         form.date.data = event.date
         form.time.data = event.time
         form.max_attendees.data = event.max_attendees
-        form.require_approval.data = event.require_approval
+
     return render_template('edit_event.html', title='Edit Event', form=form, event_id=event.id)
 
 
@@ -154,6 +161,7 @@ def create_event():
             location=form.location.data,
             date=form.date.data,
             time=form.time.data,
+            max_attendees=form.max_attendees.data,
             image_url=image_url,
             user_id=current_user.id,
         )
@@ -291,7 +299,7 @@ def edit_profile():
         current_user.about_me = form.about_me.data
         db.session.commit()
         flash("Your changes have been saved.")
-        return redirect(url_for("edit_profile"))
+        return redirect(url_for("user", username=current_user.username))  # Redirect to user page
     elif request.method == "GET":
         form.username.data = current_user.username
         form.about_me.data = current_user.about_me

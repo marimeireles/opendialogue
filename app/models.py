@@ -10,12 +10,12 @@ from sqlalchemy import UniqueConstraint, Time
 
 class RSVP(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    event_id = db.Column(db.Integer, db.ForeignKey("event.id"), nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-    user = db.relationship('User', back_populates='rsvps')
+    user = db.relationship("User", back_populates="rsvps")
     status = db.Column(db.String(20), default="Pending")  # Pending, Accepted, Denied
-    __table_args__ = (UniqueConstraint('user_id', 'event_id', name='_user_event_uc'),)
+    __table_args__ = (UniqueConstraint("user_id", "event_id", name="_user_event_uc"),)
 
     def __repr__(self):
         return f"RSVP('{self.user_id}', '{self.event_id}', '{self.status}')"
@@ -30,7 +30,7 @@ class Event(db.Model):
     time = db.Column(db.Time)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    rsvps = db.relationship('RSVP', backref='event', lazy=True)
+    rsvps = db.relationship("RSVP", backref="event", lazy=True)
     image_url = db.Column(db.String(100))
     max_attendees = db.Column(db.Integer)
 
@@ -44,7 +44,7 @@ class User(UserMixin, db.Model):
     about_me = db.Column(db.String(140))
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
     events = db.relationship("Event", backref="user", lazy="dynamic")
-    rsvps = db.relationship('RSVP', back_populates='user')
+    rsvps = db.relationship("RSVP", back_populates="user")
 
     def __repr__(self):
         return "<User {}>".format(self.username)

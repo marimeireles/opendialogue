@@ -33,4 +33,4 @@ if not app.debug:
     app.logger.setLevel(logging.INFO)
     app.logger.info("open discourse startup")
 
-app.config['UPLOAD_FOLDER'] = '../uploads'
+app.config["UPLOAD_FOLDER"] = "../uploads"

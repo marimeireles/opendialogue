@@ -20,12 +20,13 @@ class EventForm(FlaskForm):
     name = StringField("Event Name", validators=[DataRequired()])
     description = TextAreaField("Event Description", validators=[DataRequired()])
     location = StringField("Event Location", validators=[DataRequired()])
-    date = DateField("Event Date", format='%Y-%m-%d', validators=[DataRequired()])
-    time = TimeField("Event Time", format='%H:%M', validators=[DataRequired()])
-    image = FileField('Image', validators=[FileAllowed(['jpg', 'png', 'jpeg'])])
-    require_approval = BooleanField('Require Approval for RSVP')
-    max_attendees = IntegerField('Max Attendees', validators=[DataRequired(), NumberRange(min=1)])
-    submit = SubmitField('Create Event')
+    date = DateField("Event Date", format="%Y-%m-%d", validators=[DataRequired()])
+    time = TimeField("Event Time", format="%H:%M", validators=[DataRequired()])
+    image = FileField("Image", validators=[FileAllowed(["jpg", "png", "jpeg"])])
+    require_approval = BooleanField("Require Approval for RSVP")
+    max_attendees = IntegerField("Max Attendees", validators=[DataRequired(), NumberRange(min=1)])
+    submit = SubmitField("Create Event")
+
 
 def strong_password(form, field):
     password = field.data

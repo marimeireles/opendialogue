@@ -19,17 +19,17 @@ from guess_language import guess_language
 import os
 
 
-UPLOAD_FOLDER = 'uploads'
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+UPLOAD_FOLDER = "uploads"
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
 
 
 def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-@app.route('/uploads/<filename>')
+@app.route("/uploads/<filename>")
 def uploaded_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+    return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
 
 
 @app.route("/rsvp/approval/<int:rsvp_id>/<status>", methods=["GET"])
@@ -43,6 +43,7 @@ def rsvp_approval(rsvp_id, status):
     flash("RSVP status updated. ✨")
     return redirect(url_for("event_detail", event_id=rsvp.event_id))
 
+
 @app.route("/rsvp/removal/<int:rsvp_id>", methods=["GET"])
 @login_required
 def rsvp_removal(rsvp_id):
@@ -55,7 +56,7 @@ def rsvp_removal(rsvp_id):
     return redirect(url_for("event_detail", event_id=rsvp.event_id))
 
 
-@app.route('/rsvp/<int:event_id>', methods=['POST'])
+@app.route("/rsvp/<int:event_id>", methods=["POST"])
 @login_required
 def rsvp(event_id):
     event = Event.query.get_or_404(event_id)
@@ -64,29 +65,30 @@ def rsvp(event_id):
     existing_rsvp = RSVP.query.filter_by(user_id=user.id, event_id=event.id).first()
 
     if existing_rsvp:
-        flash('You have already RSVPed to this event.', 'warning')
-        return redirect(url_for('event_detail', event_id=event.id))
+        flash("You have already RSVPed to this event.", "warning")
+        return redirect(url_for("event_detail", event_id=event.id))
 
     # Count the number of accepted RSVPs for this event
     accepted_rsvps = RSVP.query.filter_by(event_id=event.id, status="Accepted").count()
 
     # Check if we can accept more RSVPs
     if event.max_attendees is not None and accepted_rsvps >= event.max_attendees:
-        flash('Sorry, this event is full. 🥺', 'warning')
-        return redirect(url_for('event_detail', event_id=event.id))
+        flash("Sorry, this event is full. 🥺", "warning")
+        return redirect(url_for("event_detail", event_id=event.id))
 
     try:
-        new_rsvp = RSVP(event_id=event.id, user_id=user.id, status="Pending")  # Assuming you require approval
+        new_rsvp = RSVP(
+            event_id=event.id, user_id=user.id, status="Pending"
+        )  # Assuming you require approval
         db.session.add(new_rsvp)
         db.session.commit()
-        flash('Successfully RSVPed to the event! Waiting for approval.', 'success')
+        flash("Successfully RSVPed to the event! Waiting for approval.", "success")
     except Exception as e:
         print(str(e))
         db.session.rollback()  # Roll back the transaction in case of error
-        flash('Failed to RSVP for the event.', 'error')
+        flash("Failed to RSVP for the event.", "error")
 
-    return redirect(url_for('event_detail', event_id=event.id))
-
+    return redirect(url_for("event_detail", event_id=event.id))
 
 
 @app.before_request
@@ -111,7 +113,7 @@ def event_detail(event_id):
     return render_template("event_detail.html", event=event)
 
 
-@app.route('/edit_event/<int:event_id>', methods=['GET', 'POST'])
+@app.route("/edit_event/<int:event_id>", methods=["GET", "POST"])
 @login_required
 def edit_event(event_id):
     event = Event.query.get_or_404(event_id)
@@ -125,18 +127,18 @@ def edit_event(event_id):
         event.date = form.date.data
         event.time = form.time.data
         event.max_attendees = form.max_attendees.data
-        
-        image = request.files['image']
+
+        image = request.files["image"]
         if image and allowed_file(image.filename):
             filename = secure_filename(image.filename)
-            image_url = os.path.join(app.config['UPLOAD_FOLDER'], filename).replace("../", "", 1)
+            image_url = os.path.join(app.config["UPLOAD_FOLDER"], filename).replace("../", "", 1)
             image.save(image_url)
             event.image_url = image_url  # update image_url field
 
         db.session.commit()
-        flash('Your event has been updated', 'success')
-        return redirect(url_for('event_detail', event_id=event.id))
-    elif request.method == 'GET':
+        flash("Your event has been updated", "success")
+        return redirect(url_for("event_detail", event_id=event.id))
+    elif request.method == "GET":
         form.name.data = event.name
         form.description.data = event.description
         form.location.data = event.location
@@ -144,26 +146,25 @@ def edit_event(event_id):
         form.time.data = event.time
         form.max_attendees.data = event.max_attendees
 
-    return render_template('edit_event.html', title='Edit Event', form=form, event_id=event.id)
-
+    return render_template("edit_event.html", title="Edit Event", form=form, event_id=event.id)
 
 
 @app.route("/create_event", methods=["GET", "POST"])
 @login_required
 def create_event():
-    print('gets in create event 🏝️')
+    print("gets in create event 🏝️")
     form = EventForm()
     print("RAW data received:", request.form)
     if form.validate_on_submit():
-        print('Form is valid 🎉')
-        image_url = ''
-        image = request.files['image']
+        print("Form is valid 🎉")
+        image_url = ""
+        image = request.files["image"]
 
         print(f"Is the file allowed? {allowed_file(image.filename)}")  # Debug
 
         if image and allowed_file(image.filename):
             filename = secure_filename(image.filename)
-            image_url = os.path.join(app.config['UPLOAD_FOLDER'], filename).replace("../", "", 1)
+            image_url = os.path.join(app.config["UPLOAD_FOLDER"], filename).replace("../", "", 1)
             print(f"Saving image to: {image_url}")  # Debug
             try:
                 image.save(image_url)
@@ -185,7 +186,7 @@ def create_event():
             user_id=current_user.id,
         )
 
-        print('☀️☀️☀️☀️')
+        print("☀️☀️☀️☀️")
 
         try:
             db.session.add(event)
@@ -202,7 +203,7 @@ def create_event():
         flash("Your event has been created! 🥰")
 
     else:
-        print('Form is not valid 😢')
+        print("Form is not valid 😢")
         print(form.errors)  # Print validation errors
         return render_template("create_event.html", form=form)
 
@@ -240,13 +241,11 @@ def user_index():
 def explore():
     current_time = datetime.utcnow()
     upcoming_events = (
-        Event.query.filter(Event.date >= current_time)
-        .order_by(Event.date.asc())
-        .all()
+        Event.query.filter(Event.date >= current_time).order_by(Event.date.asc()).all()
     )
 
     for event in upcoming_events:
-        print(f'Event {event.id} has image_url: {event.image_url}')
+        print(f"Event {event.id} has image_url: {event.image_url}")
 
     return render_template("explore.html", upcoming_events=upcoming_events)
 

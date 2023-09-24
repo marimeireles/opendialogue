@@ -13,7 +13,8 @@
                     <p class="card-text">{{ event.description }}</p>
                     <p class="card-text"><medium class="text-muted">Location: {{ event.location }}</small></p>
                     <p class="card-text"><medium class="text-muted">Date: {{ event.date }}</small></p>
-                        <p class="card-text"><medium class="text-muted">Time: {{ event.time }}</small></p>
+                    <p class="card-text"><medium class="text-muted">Time: {{ event.time }}</small></p>
+                    <p class="card-text"><medium class="text-muted">Maximum number of attendees: {{ event.max_attendees }}</small></p>
 
                     <!-- RSVP button -->
                     <form method="post" action="{{ url_for('rsvp', event_id=event.id) }}">

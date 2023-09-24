@@ -63,7 +63,7 @@ def rsvp(event_id):
     existing_rsvp = RSVP.query.filter_by(user_id=user.id, event_id=event.id).first()
 
     if existing_rsvp:
-        flash('You have already RSVPed for this event.', 'warning')
+        flash('You have already RSVPed to this event.', 'warning')
         return redirect(url_for('event_detail', event_id=event.id))
 
     # Count the number of accepted RSVPs for this event
@@ -78,7 +78,7 @@ def rsvp(event_id):
         new_rsvp = RSVP(event_id=event.id, user_id=user.id, status="Pending")  # Assuming you require approval
         db.session.add(new_rsvp)
         db.session.commit()
-        flash('Successfully RSVPed for the event! Waiting for approval.', 'success')
+        flash('Successfully RSVPed to the event! Waiting for approval.', 'success')
     except Exception as e:
         print(str(e))
         db.session.rollback()  # Roll back the transaction in case of error

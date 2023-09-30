@@ -15,7 +15,6 @@ from app.forms import (
 )
 from app.models import User, Post, Event, RSVP
 from app.email import send_password_reset_email
-from guess_language import guess_language
 import os
 
 

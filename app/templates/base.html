@@ -11,17 +11,9 @@
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style/base.css') }}">
 
 <style>
-    @keyframes rotate {
-        0% {
-            transform: rotate(0deg);
-        }
-        100% {
-            transform: rotate(360deg);
-        }
-    }
 
     .navbar {
-        background-color: #fafafa; !important
+        background-color: #fafafa; important;
     }
 
     .navbar-header {
@@ -36,14 +28,14 @@
     }
 
     ul.nav.navbar-nav li a {
-        color: #92a8d1; !important
-        font-size: 17px;
+        color: #92a8d1 !important;
+        font-size: 17px !important;
         font-weight: 500;
     }
 
     ul.nav.navbar-nav li a:hover {
-        color: #7da0df; !important
-        font-size: 17px;
+        color: #7da0df !important;
+        font-size: 17px !important;
         font-weight: 500;
     }
 
@@ -52,8 +44,17 @@
         text-decoration: underline;
     }
 
-    h1, p, th, .card-header, .card-title, .mt-3, .mt-4 {
+    h1, p, th, .mt-3, .mt-4 {
         color: #fc9289;
+    }
+
+    .card-header, .card-title {
+        color: #fc9289;
+        font-size: 27px !important;
+    }
+
+    .card-text {
+        font-size: 20px !important;
     }
 
     .list-group-item {
@@ -89,9 +90,11 @@
         text-shadow: 2px 2px #fafafa;
     }
 
-    .out-top, .in-top, .out-bottom, .in-bottom {
-        transform-origin: 50% 50%;
-    }
+.out-top, .in-top, .out-bottom, .in-bottom {
+    transform-origin: 50% 50%;
+    will-change: transform;
+}
+
 
     .out-top {
         animation: rotate 20s linear infinite;
@@ -140,9 +143,9 @@
     }
 
     .subtitlea {
-        text-decoration: underline; !important
-        color: #92a8d1; !important
-        margin-left: 0em; !important
+        text-decoration: underline !important;
+        color: #92a8d1 !important;
+        margin-left: 0em important;
     }
 
     a img.icon {

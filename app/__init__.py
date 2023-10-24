@@ -9,8 +9,14 @@ from flask_mail import Mail
 from flask_bootstrap import Bootstrap
 import os
 
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, 'app.db')
+
 app = Flask(__name__)
 app.config.from_object(Config)
+app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
+app.config["UPLOAD_FOLDER"] = os.path.join(BASE_DIR, 'uploads')
+
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 login = LoginManager(app)
@@ -33,4 +39,3 @@ if not app.debug:
     app.logger.setLevel(logging.INFO)
     app.logger.info("open discourse startup")
 
-app.config["UPLOAD_FOLDER"] = "../uploads"
